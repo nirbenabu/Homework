@@ -5,9 +5,6 @@
 * by default console presentation.                *
 * Each cell is of type Cell (enum), having ALIVE  *
 * or DEAD as states.                              *
-* No cleaning of screen & using scanf in order to *
-* keep the code cross platfrom                    *
-* (debugged with linux)                           *
 * Written by NiR.                                 *
 **************************************************/
 

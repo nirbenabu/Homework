@@ -1,6 +1,9 @@
 /*************************************
 * cmd_interface.c - a command line interface
 * for my game of life implementation.
+* No cleaning of screen & using scanf in order to 
+* keep the code cross platfrom                    
+* (debugged with linux)                           
 * Usage: life <width> <height>
 *************************************/
 
