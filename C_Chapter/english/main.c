@@ -108,7 +108,7 @@ int main(int argc, char* argv[])
         }
 
         /* Write to the tepmorary file */
-        fprintf(temp_file, "%s ", buffer_word);
+        fprintf(temp_file, "%s ", buffer_word); // T: handle return values from file operations
         if(k=='\n')
           fprintf(temp_file,"\n");
 
@@ -151,7 +151,7 @@ char readsection(char* buffer, FILE* file, int flag)
 {
     int i;
     char c='0';
-
+    // T: check buffer and file are not null
     for(i=0; c!='\n'&&(flag||c!=' '); i++)
     {
         c = fgetc(file);
@@ -174,7 +174,7 @@ char readsection(char* buffer, FILE* file, int flag)
 **/
 void copyfile(FILE* dest, FILE* src)
 {
-  char c;
+  char c; // T: check dest and src are not null
   fseek(src,0,SEEK_SET);
   fseek(dest, 0, SEEK_SET);
 
@@ -191,9 +191,9 @@ void copyfile(FILE* dest, FILE* src)
 **/
 
 void lower(char* str)
-{
+{ // T: cheack str is not null
   int i;
-  for(i = 0; i<strlen(str); i++)
+  for(i = 0; i<strlen(str); i++) // T: use strnlen 
   {
     str[i] = tolower(str[i]);
   }
