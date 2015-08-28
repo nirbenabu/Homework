@@ -6,7 +6,7 @@
 * Output: int - 1 for OK; 0 for ERROR
 **/
 int queue_init(Queue* q) { /* Use the list function */
-    return list_init(&q->l);
+    return list_init(&q->l); // T: check q is not null
 }
 
 /**
@@ -15,7 +15,8 @@ int queue_init(Queue* q) { /* Use the list function */
 * Output: int - 1 for OK; 0 for ERROR
 **/
 int queue_destroy(Queue* q){ /* Use the list function */
-    return list_destroy(&q->l);
+    return list_destroy(&q->l); // T: check q is not null 
+    // T: destroy Queue struct
 }
 
 /**
@@ -24,7 +25,7 @@ int queue_destroy(Queue* q){ /* Use the list function */
 * Output: Node* - the node added.
 **/
 Node* queue_enqueue(Queue* q, void* value) { /* Use the list function */
-    return list_add(&q->l, value);
+    return list_add(&q->l, value); // T: check q is not null
 }
 
 /**
@@ -35,8 +36,8 @@ Node* queue_enqueue(Queue* q, void* value) { /* Use the list function */
 void* queue_dequeue(Queue* q) { /* Use the list function, backup memory before deletion,
                                 !!!data should be freed manually!!! */
     if(queue_size(q)>0) {
-        Node* n = list_last(&q->l);
-        int size = sizeof(list_value(n));
+        Node* n = list_last(&q->l); // T: check q is not null
+        int size = sizeof(list_value(n)); // T: list value returns void* pointer, sizeof pointer is 4
         void* data = (void*)malloc(size);
         memcpy(data, list_value(list_last(&q->l)), size);
         list_delete(&q->l, n);
@@ -52,7 +53,7 @@ void* queue_dequeue(Queue* q) { /* Use the list function, backup memory before d
 * Output: int - the size requried
 **/
 int queue_size(Queue* q) { /* Use the list function */
-    return list_length(&q->l);
+    return list_length(&q->l); // T: check q is not null
 }
 
 /**
@@ -61,5 +62,5 @@ int queue_size(Queue* q) { /* Use the list function */
 * Output: void* - pointer to value
 **/
 void* queue_peek(Queue* q) { /* Use the list functions */
-    return list_value(list_last(&q->l));
+    return list_value(list_last(&q->l)); // T: check q is not null
 }
