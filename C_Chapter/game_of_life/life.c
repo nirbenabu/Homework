@@ -17,7 +17,7 @@
 * Output: int - the requested number.
 **/
 static int _neighbours_alive(Cell** board, int x, int y, int width, int height) { /* NOTE!!! SEGMENTATION FAULT! */
-  int i,k,res = 0; /* iterators */
+  int i,k,res = 0; /* iterators */ // T: why not send to function life struct instead of all his data? 
 
   for(i=-1; i<2; i++)
   {
@@ -60,7 +60,7 @@ static void _free_board(Cell** board, int width) {
 
   for(i=0; i < width; i++) {
     free(board[i]);
-  }
+  } // T: should free board too
 }
 
 /**
@@ -92,9 +92,9 @@ static int _check_board(Cell** board, int width, int height)
 * Output: int - 1 for success; 0 for error.
 **/
 int life_init(Life* l, int width, int height, Cell** board) {
-  if(!(width > 0 && height > 0))
+  if(!(width > 0 && height > 0)) // T: check also for MAX values
     return 0;
-
+  // T: check l is not null
   /* Reset everything */
   l->_generation = 0;
   l->_width = width;
@@ -119,7 +119,7 @@ int life_init(Life* l, int width, int height, Cell** board) {
 **/
 int life_advance(Life* l) {
   int i, j; /* iterators */
-
+  // check l is not null
   ++(l->_generation);
   Cell** temp = _make_board(l->_width, l->_height); /* The next generation board */
 
@@ -152,13 +152,13 @@ int life_advance(Life* l) {
 **/
 void life_print(Life* l, FILE* output) {
   int i, j, k; /* Iterators */
-
+  // check l is not null
   if(output == NULL)
     output = stdout;
 
   /* create top line */
   for(k = 0; k<l->_width*2; k++)
-    fputc('-',output);
+    fputc('-',output); // T: handle return values from file operation: fputc, fprintf etc.
   fputc('\n',output);
 
   for(i=0; i<l->_width; i++) {
@@ -229,7 +229,7 @@ int life_set(Life* l, int x, int y, Cell value) {
 * Output: int - 1 success; 0 error
 **/
 int life_toggle(Life* l, int x, int y) {
-  return life_set(l, x,y, !l->_board[x][y]);
+  return life_set(l, x,y, !l->_board[x][y]); // T: not operator not good, what happend if ALIVE wont be 1 and DEAD wont be 0?
 }
 
 /**
@@ -242,6 +242,6 @@ void life_destroy(Life* l) {
   l->_width = 0;
   l->_height = 0;
   l->_generation = 0;
-
-  return 1;
+  
+  return 1; // T: return 1 in void function?
 }
