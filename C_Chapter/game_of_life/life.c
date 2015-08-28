@@ -20,7 +20,7 @@
 * Input: l - pointer to life struct; x - width array position; y - height array position;
 * Output: int - the requested number.
 **/
-static int _neighbours_alive(Cell** board, int x, int y, int width, int height) { /* NOTE!!! SEGMENTATION FAULT! */
+static int _neighbours_alive(Cell** board, int x, int y, int width, int height) { /* BEWARE OF MAKING A SEGMENTATION FAULT! */
                     /* T: why not send to function life struct instead of all his data?
                      * S: Because someone might want to implement his own version of life, maybe a copy of mine
                      *    but with different rules etc... either way you get more flexibility for example
