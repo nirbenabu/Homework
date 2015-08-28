@@ -11,13 +11,23 @@
 #include <stdio.h>
 #include "life.h"
 
+#if !defined(NULL)
+#define NULL ((void*)0)
+#endif
+
 /**
 * Count neighbours alive; A STATIC FUNCTION.
 * Input: l - pointer to life struct; x - width array position; y - height array position;
 * Output: int - the requested number.
 **/
 static int _neighbours_alive(Cell** board, int x, int y, int width, int height) { /* NOTE!!! SEGMENTATION FAULT! */
-  int i,k,res = 0; /* iterators */ // T: why not send to function life struct instead of all his data? 
+                    /* T: why not send to function life struct instead of all his data?
+                     * S: Because someone might want to implement his own version of life, maybe a copy of mine
+                     *    but with different rules etc... either way you get more flexibility for example
+                     *    making the GUI follow you each step and coloring the neighbours or something (of course this
+                     *    would require us to make it non static). */
+
+  int i,k,res = 0; /* iterators */
 
   for(i=-1; i<2; i++)
   {
@@ -60,7 +70,9 @@ static void _free_board(Cell** board, int width) {
 
   for(i=0; i < width; i++) {
     free(board[i]);
-  } // T: should free board too
+  }
+
+  free(board);
 }
 
 /**
@@ -92,9 +104,13 @@ static int _check_board(Cell** board, int width, int height)
 * Output: int - 1 for success; 0 for error.
 **/
 int life_init(Life* l, int width, int height, Cell** board) {
-  if(!(width > 0 && height > 0)) // T: check also for MAX values
+  /* T: check also for MAX values
+     S: there are no MAX values lol, dynamically allocated board. */
+  if(!(width > 0 && height > 0))
     return 0;
-  // T: check l is not null
+  if(l == NULL)
+    return 0;
+
   /* Reset everything */
   l->_generation = 0;
   l->_width = width;
@@ -119,7 +135,9 @@ int life_init(Life* l, int width, int height, Cell** board) {
 **/
 int life_advance(Life* l) {
   int i, j; /* iterators */
-  // check l is not null
+  if(l == NULL)
+    return 0;
+
   ++(l->_generation);
   Cell** temp = _make_board(l->_width, l->_height); /* The next generation board */
 
@@ -148,28 +166,54 @@ int life_advance(Life* l) {
 /**
 * Print the game board
 * Input: l - the life struct, output - output device; default - console.
-* Output: void - nothing.
+* Output: int - 1 for OK, 0 for ERROR
 **/
-void life_print(Life* l, FILE* output) {
+int life_print(Life* l, FILE* output) {
   int i, j, k; /* Iterators */
-  // check l is not null
+  char r; /* For file operations output */
+
+  if(l==NULL)
+    return 0;
+
   if(output == NULL)
     output = stdout;
 
   /* create top line */
-  for(k = 0; k<l->_width*2; k++)
-    fputc('-',output); // T: handle return values from file operation: fputc, fprintf etc.
-  fputc('\n',output);
+  for(k = 0; k<l->_width*2; k++) {
+    r = fputc('-',output);
+    if(r==EOF)
+      break;
+  }
+
+  if(r==EOF)
+    return 0;
+
+  if(fputc('\n',output)==EOF)
+    return 0;
 
   for(i=0; i<l->_width; i++) {
     for(j=0; j<l->_height; j++) {
-      fprintf(output, "%c|", (l->_board[i][j]==ALIVE)?'*':' ');
+      if((r = fprintf(output, "%c|", (l->_board[i][j]==ALIVE)?'*':' '))==EOF)
+        break;
     }
+
+    if(r==EOF)
+      return 0;
     /* create bottom line */
-    fputc('\n',output);
+    if(fputc('\n',output)==EOF)
+      return 0;
+
     for(k = 0; k<l->_width*2; k++)
-      fputc('-',output);
-    fputc('\n',output);
+      if((r=fputc('-',output))==EOF)
+        break;
+
+    if(r==EOF)
+      return 0;
+
+    if(fputc('\n',output)==EOF)
+      return 0;
+
+    return 1;
   }
 
 }
@@ -229,7 +273,7 @@ int life_set(Life* l, int x, int y, Cell value) {
 * Output: int - 1 success; 0 error
 **/
 int life_toggle(Life* l, int x, int y) {
-  return life_set(l, x,y, !l->_board[x][y]); // T: not operator not good, what happend if ALIVE wont be 1 and DEAD wont be 0?
+  return life_set(l, x,y, l->_board[x][y] == DEAD);
 }
 
 /**
@@ -242,6 +286,4 @@ void life_destroy(Life* l) {
   l->_width = 0;
   l->_height = 0;
   l->_generation = 0;
-  
-  return 1; // T: return 1 in void function?
 }

@@ -20,11 +20,16 @@
 #include <stdio.h>
 #include <string.h>
 
+#if !defined(NULL)
+#define NULL
+#endif
+
 #define WRONG_ARGUMENTS (-1)
 #define CANNOT_OPEN_INPUT_FILE (-2)
 #define CANNOT_OPEN_OUTPUT_FILE (-3)
 #define CANNOT_CLOSE_INPUT_FILE (-4)
 #define CANNOT_CLOSE_OUTPUT_FILE (-5)
+#define OUTPUT_ERROR (-6)
 /* Words info */
 #define LONGEST_DICTIONARY_WORD 45
 #define MAX_SYNONYMS 120
@@ -108,9 +113,12 @@ int main(int argc, char* argv[])
         }
 
         /* Write to the tepmorary file */
-        fprintf(temp_file, "%s ", buffer_word); // T: handle return values from file operations
+        if(fprintf(temp_file, "%s ", buffer_word)==EOF)
+          return OUTPUT_ERROR;
+
         if(k=='\n')
-          fprintf(temp_file,"\n");
+          if(fprintf(temp_file,"\n")==EOF)
+            return OUTPUT_ERROR;
 
         fseek(voc, 0, SEEK_SET);
       }
@@ -145,13 +153,16 @@ int main(int argc, char* argv[])
 /**
 * Reads a single line or word from file and saves it on a provided buffer.
 * Input: char* buffer - the buffer to write to, FILE* file - the file to read from, flag - 0 for line; 1 for word
-* Output: char - last character read
+* Output: char - last character read; -2 for Error
 **/
 char readsection(char* buffer, FILE* file, int flag)
 {
     int i;
     char c='0';
-    // T: check buffer and file are not null
+
+    if(buffer==NULL || file==NULL)
+      return -2;
+
     for(i=0; c!='\n'&&(flag||c!=' '); i++)
     {
         c = fgetc(file);
@@ -170,11 +181,14 @@ char readsection(char* buffer, FILE* file, int flag)
 /**
 * Copys file src to dest
 * Input: FILE* - file pointers for the destination and source files;
-* Output: void - nothing
+* Output: int - 1 for OK; 0 for ERROR
 **/
-void copyfile(FILE* dest, FILE* src)
+int copyfile(FILE* dest, FILE* src)
 {
-  char c; // T: check dest and src are not null
+  if(dest == NULL || src == NULL)
+    return 0;
+
+  char c;
   fseek(src,0,SEEK_SET);
   fseek(dest, 0, SEEK_SET);
 
@@ -182,6 +196,8 @@ void copyfile(FILE* dest, FILE* src)
   {
     fputc(c, dest);
   }
+
+  return 1;
 }
 
 /**
@@ -191,9 +207,12 @@ void copyfile(FILE* dest, FILE* src)
 **/
 
 void lower(char* str)
-{ // T: cheack str is not null
+{
+  if(str == NULL)
+    return;
+
   int i;
-  for(i = 0; i<strlen(str); i++) // T: use strnlen 
+  for(i = 0; i<strnlen(str, LONGEST_DICTIONARY_WORD*MAX_SYNONYMS); i++)
   {
     str[i] = tolower(str[i]);
   }
