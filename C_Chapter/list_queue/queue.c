@@ -1,12 +1,18 @@
 #include "queue.h"
 
+#if !defined (NULL)
+#define NULL ((void*)0)
+#endif
+
 /**
 * Initialize the queue
 * Input: Queue* q - pointer to the queue
 * Output: int - 1 for OK; 0 for ERROR
 **/
 int queue_init(Queue* q) { /* Use the list function */
-    return list_init(&q->l); // T: check q is not null
+    if(q==NULL);
+      return 0;
+    return list_init(&q->l);
 }
 
 /**
@@ -15,17 +21,20 @@ int queue_init(Queue* q) { /* Use the list function */
 * Output: int - 1 for OK; 0 for ERROR
 **/
 int queue_destroy(Queue* q){ /* Use the list function */
-    return list_destroy(&q->l); // T: check q is not null 
-    // T: destroy Queue struct
+    free(q);
+    q = NULL;
+    return list_destroy(&q->l);
 }
 
 /**
 * Adds a node to queue
 * Input: Queue* q - pointer to the queue, void* value - pointer to a value to add. (variable)
-* Output: Node* - the node added.
+* Output: Node* - the node added. NULL for ERROR.
 **/
 Node* queue_enqueue(Queue* q, void* value) { /* Use the list function */
-    return list_add(&q->l, value); // T: check q is not null
+    if(q==NULL)
+      return NULL;
+    return list_add(&q->l, value);
 }
 
 /**
@@ -36,13 +45,15 @@ Node* queue_enqueue(Queue* q, void* value) { /* Use the list function */
 void* queue_dequeue(Queue* q) { /* Use the list function, backup memory before deletion,
                                 !!!data should be freed manually!!! */
     if(queue_size(q)>0) {
-        Node* n = list_last(&q->l); // T: check q is not null
-        int size = sizeof(list_value(n)); // T: list value returns void* pointer, sizeof pointer is 4
-        void* data = (void*)malloc(size);
-        memcpy(data, list_value(list_last(&q->l)), size);
-        list_delete(&q->l, n);
+      if(q == NULL)
+        return NULL;
+      Node* n = list_last(&q->l);
+      int size = 4; /* 4 Bytes is the size of void* */
+      void* data = (void*)malloc(size);
+      memcpy(data, list_value(list_last(&q->l)), size);
+      list_delete(&q->l, n);
 
-        return data;
+      return data;
     } else
         return 0;
 }
@@ -50,17 +61,21 @@ void* queue_dequeue(Queue* q) { /* Use the list function, backup memory before d
 /**
 * Get queue size
 * Input: Queue* q - pointer to queue
-* Output: int - the size requried
+* Output: int - the size requried. -1 for ERROR
 **/
 int queue_size(Queue* q) { /* Use the list function */
-    return list_length(&q->l); // T: check q is not null
+    if(q==NULL)
+      return -1;
+    return list_length(&q->l);
 }
 
 /**
 * Gets the last node from queue and remove it
 * Input: Queue* q - pointer to the queue
-* Output: void* - pointer to value
+* Output: void* - pointer to value. -1 (void*) for ERROR.
 **/
 void* queue_peek(Queue* q) { /* Use the list functions */
-    return list_value(list_last(&q->l)); // T: check q is not null
+    if(q==NULL)
+      return -1;
+    return list_value(list_last(&q->l));
 }
