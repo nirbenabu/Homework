@@ -1,5 +1,6 @@
 #include "list.h"
 
+// T: better use defines for functions return values,
 
 /**
 * Initializes the dynamic list.
@@ -7,7 +8,8 @@
 * Output: int - 1 for true, 0 for false
 **/
 int list_init(List* l) {
-    l->_size = 0;
+    // T: check l is not null
+    l->_size = 0; // T: better use NULL define
     l->_first = 0;
     l->_last = 0;
     l->_sum = 0;
@@ -21,16 +23,17 @@ int list_init(List* l) {
 * Output: int - 1 for true, 0 for false
 **/
 int list_destroy(List* l) {
+    // T: check l is not null
     /* Iterate through all elements and release them */
     l->_size = 0;
     l->_sum = 0;
 
     Node* cur = l->_first;
 
-    if(cur == 0)
+    if(cur == 0) // T: better use null define
         return 1;
 
-    while(cur->_next != 0) /*TODO: fix */
+    while(cur->_next != 0) /*TODO: fix */ // T: do your todo
     {
         Node* n = cur->_next;
         free_node(cur);
@@ -38,7 +41,7 @@ int list_destroy(List* l) {
     }
 
     free_node(l->_last);
-
+    // T: free list struct 
     return 1;
 }
 
@@ -53,20 +56,21 @@ Node* list_add(List* l, void* value) {
     if((n = (Node*)malloc(sizeof(Node)))==0)
         return 0;
 
-    void* v = (void*)malloc(sizeof(*value));
+    void* v = (void*)malloc(sizeof(*value));// T: what? no. you can tell what the size of value, you should assume the value
+                                            // was alloced before and the list will only hold the pointer
     v = memcpy (v, value, sizeof(*value));
 
-    if(v==0) {
+    if(v==0) { // T: better use NULL define
         free(n);
         return 0;
     }
 
-    n->value = v;
+    n->value = v; // T: should be -> n->value = value
     n->_next = 0;
     n->_prev = 0;
 
     /* Include in the list chain */
-
+    // T: check l is not null
     if(l->_last == 0) { /* if first */
         l->_first = n;
         n->_prev = 0;
@@ -90,12 +94,12 @@ Node* list_add(List* l, void* value) {
 * Input: List* l - pointer to list struct, Node* node - the node to delete.
 * Output: int - 1 for true, 0 for false
 **/
-int list_delete(List *l, Node* node) {
+int list_delete(List *l, Node* node) { // T: check l and node are not null
     /* Exclude the node from the chain */
     if(node->_prev == 0 && node->_next == 0) { /* if the only one */
-        l->_last = 0;
+        l->_last = 0; // T: you assume node in the list, what if not? what happend if i create a node, zero it and send to this function?
         l->_first = 0;
-    }
+    } 
     else if(node->_prev==0) { /* if first */
         l->_first = node->_next;
         node->_next->_prev = 0;
@@ -119,7 +123,7 @@ int list_delete(List *l, Node* node) {
 * Output: Node* the first node
 **/
 Node* list_first(List* l) {
-    return l->_first;
+    return l->_first; // T: check l is not null
 }
 
 /**
@@ -128,7 +132,7 @@ Node* list_first(List* l) {
 * Output: Node* the last node
 **/
 Node* list_last(List* l) {
-    return l->_last;
+    return l->_last; // T: check l is not null
 }
 
 /**
@@ -137,7 +141,7 @@ Node* list_last(List* l) {
 * Output: Node* next node after the node given in the args.
 **/
 Node* list_next(Node* node) {
-    return node->_next;
+    return node->_next; // T: check node is not null
 }
 
 /**
@@ -146,7 +150,7 @@ Node* list_next(Node* node) {
 * Output: void* - the value of the node.
 **/
 void* list_value(Node* node) {
-    return node->value;
+    return node->value; // T: check node is not null
 }
 
 /**
@@ -170,7 +174,7 @@ float list_average(List* l) {
 * Output: int - the length of the list.
 **/
 int list_length(List* l) {
-    return l->_size;
+    return l->_size; // T: check l is not null
 }
 
 /**
@@ -202,7 +206,7 @@ int list_getint(Node* node) {
 * Output: Node* - pointer to the node added
 **/
 Node* list_insert(List* l, Node* n) {
-
+    // T: check l and l are not null
     n->_next = 0;
 
     /* Include in the list chain */
