@@ -134,7 +134,7 @@ int life_init(Life* l, int width, int height, Cell** board) {
 * Output: int - current generation number.
 **/
 int life_advance(Life* l) {
-  int i, j; /* iterators */
+  int i, j; /* iterators */r
   if(l == NULL)
     return 0;
 
@@ -212,10 +212,9 @@ int life_print(Life* l, FILE* output) {
 
     if(fputc('\n',output)==EOF)
       return 0;
-
-    return 1;
+      
   }
-
+    return 1;
 }
 
 /**
